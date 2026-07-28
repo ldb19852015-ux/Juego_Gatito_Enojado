@@ -1,0 +1,145 @@
+# GATITO SPEC DRIVE DEVELOPMENT
+
+**Título:** GATITO ENOJADO  
+**Subtítulo:** El gatito explosivo  
+**Tagline:** *"Siembra cacas. Cosecha destrucción."*  
+**Documento:** Master Specification Document  
+**Versión:** 2.0  
+**Estado:** Implementado  
+
+---
+
+## CONTROL DE VERSIONES
+
+* **Versión 1.0**
+  * Documento inicial de diseño MVP.
+* **Versión 2.0**
+  * Actualización realizada según implementación final.
+  * Incorporación de sistema de vidas.
+  * Incorporación de invulnerabilidad temporal.
+  * Incorporación de enemigos funcionales.
+  * Actualización de controles.
+  * Actualización de temporizador de explosión.
+  * Incorporación de HUD.
+  * Incorporación de sistema de pausa.
+  * Incorporación de condiciones de victoria y derrota.
+
+---
+
+## 1. VISIÓN DEL PRODUCTO
+
+**GATITO ENOJADO** es un videojuego arcade inspirado en Bomberman donde el jugador controla un pequeño gato atrapado dentro de un laberinto.
+
+Para sobrevivir deberá colocar cacas explosivas capaces de destruir obstáculos y eliminar enemigos.
+
+El objetivo principal es eliminar a todos los enemigos presentes en el nivel antes de perder todas las vidas disponibles.
+
+El juego combina exploración, posicionamiento estratégico y control del tiempo de detonación de las explosiones.
+
+---
+
+## 2. OBJETIVOS DEL JUEGO
+
+* **Objetivo principal:** Eliminar a todos los enemigos presentes en el mapa.
+* **Condición de victoria:** `ENEMIGOS_VIVOS = 0`
+* **Condición de derrota:** `VIDAS = 0`
+
+---
+
+## 3. CONFIGURACIÓN GENERAL
+
+| Parámetro | Valor |
+| :--- | :--- |
+| **Resolución** | 800 x 600 píxeles |
+| **FPS** | 60 |
+| **Tamaño de Tile** | 32 x 32 píxeles |
+| **Tamaño del mapa** | 25 x 18 tiles |
+| **Color de fondo** | Negro |
+
+---
+
+## 4. CONTROLES
+
+### Movimiento:
+* **Flecha Arriba** = Mover arriba
+* **Flecha Abajo** = Mover abajo
+* **Flecha Izquierda** = Mover izquierda
+* **Flecha Derecha** = Mover derecha
+
+### Acciones:
+* **KP0 (Numpad 0)** = Colocar caca explosiva
+* **ESC** = Pausar / Reanudar juego
+
+---
+
+## 5. PERSONAJE PRINCIPAL
+
+* **Nombre:** Gatito
+* **Sprite Base:** `player_0.png`
+
+### Características:
+* Movimiento en cuatro direcciones.
+* Animación de caminata de tres cuadros.
+* Cambio de orientación izquierda/derecha.
+* Puede colocar cacas explosivas.
+* Posee sistema de vidas.
+* Puede recibir daño por enemigos.
+* Puede morir por explosiones.
+* Posee invulnerabilidad temporal al recibir daño.
+
+### Valores Iniciales:
+* `VIDAS = 3`
+* `VELOCIDAD = 4`
+* `MAX_CACAS_SIMULTANEAS = 5`
+
+---
+
+## 6. SISTEMA DE DAÑO
+
+Cuando el jugador recibe daño:
+* Pierde una vida.
+* Obtiene un segundo de invulnerabilidad temporal.
+* Parpadea visualmente durante la invulnerabilidad.
+
+**Fuentes de daño:**
+* Contacto con enemigos.
+* Explosiones.
+
+Cuando las vidas llegan a cero:
+> `ESTADO = GAME OVER`
+
+---
+
+## 7. SISTEMA DE MOVIMIENTO
+
+El movimiento se realiza sobre una grilla basada en tiles.
+
+### Bloquean el movimiento:
+* Muros indestructibles.
+* Bloques destructibles.
+* Cacas colocadas luego de 200 ms desde su aparición.
+
+### Permiten movimiento:
+* Casillas libres.
+
+### Restricciones:
+* El jugador no puede salir de los límites del mapa.
+
+---
+
+## 8. SISTEMA DE CACAS EXPLOSIVAS
+
+**Descripción:**  
+El jugador puede colocar cacas explosivas sobre el terreno para destruir obstáculos y derrotar enemigos.
+
+### Características:
+* Temporizador de detonación automático.
+* Animación propia.
+* Colisión física luego de 200 ms.
+* Puede destruir bloques destructibles.
+* Puede eliminar enemigos.
+* Puede dañar al jugador.
+
+### Parámetros:
+* **Cantidad máxima simultánea:** 5
+* **Tiempo de detonación:** 1000 ms (1 segundo)
