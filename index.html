@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gatito Enojado</title>
     <style>
+        /* Estilos generales para centrar el juego y darle estética retro */
         body {
             background-color: #000;
             color: #fff;
@@ -17,11 +18,13 @@
             margin: 0;
             overflow: hidden;
         }
+        /* Configuración visual del lienzo de juego (Canvas) */
         canvas {
             border: 4px solid #333;
             background-color: #000;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
         }
+        /* Estilo para el contador de vidas (HUD) */
         #hud {
             margin-bottom: 10px;
             font-size: 24px;
@@ -31,10 +34,13 @@
 </head>
 <body>
 
+    <!-- HUD superior para mostrar las vidas restantes -->
     <div id="hud">VIDAS: 3</div>
+    
+    <!-- Canvas principal donde se renderiza el motor del juego -->
     <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-    <!-- Script principal del juego -->
+    <!-- Importación del script principal como módulo de ES6 -->
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
