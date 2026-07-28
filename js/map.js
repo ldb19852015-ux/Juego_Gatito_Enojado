@@ -5,6 +5,7 @@ export class GameMap {
         this.walls = [];
         this.destructibles = [];
         
+        // Carga de imágenes de texturas del escenario
         this.wallImg = new Image();
         this.wallImg.src = 'assets/wall.png';
         
@@ -14,6 +15,7 @@ export class GameMap {
         this.initMap();
     }
 
+    // Inicializa la lectura del mapa mediante la matriz de constantes
     initMap() {
         LEVEL_LAYOUT.forEach((row, r) => {
             for (let c = 0; c < row.length; c++) {
@@ -28,6 +30,7 @@ export class GameMap {
         });
     }
 
+    // Filtra y elimina bloques destructibles alcanzados por una explosión
     removeBlocksInArea(explosionRect) {
         this.destructibles = this.destructibles.filter(block => {
             return !(block.x < explosionRect.x + explosionRect.width &&
@@ -37,6 +40,7 @@ export class GameMap {
         });
     }
 
+    // Dibuja los muros y bloques destructibles en pantalla
     draw(ctx) {
         this.walls.forEach(w => ctx.drawImage(this.wallImg, w.x, w.y, TILE_SIZE, TILE_SIZE));
         this.destructibles.forEach(d => ctx.drawImage(this.destImg, d.x, d.y, TILE_SIZE, TILE_SIZE));
