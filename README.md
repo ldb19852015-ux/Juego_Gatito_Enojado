@@ -34,7 +34,7 @@ El proyecto utiliza una arquitectura modular limpia basada en ES6:
 | **`Flecha Abajo`** | Mover hacia abajo |
 | **`Flecha Izquierda`** | Mover hacia la izquierda |
 | **`Flecha Derecha`** | Mover hacia la derecha |
-| **`Numpad 0` / `Espacio`** | Colocar trampa / Caca explosiva |
+| **`Numpad 0`** | Colocar trampa / Caca explosiva |
 
 ---
 
