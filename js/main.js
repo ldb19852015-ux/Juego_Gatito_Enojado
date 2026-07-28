@@ -8,7 +8,7 @@ const ctx = canvas.getContext('2d');
 const hud = document.getElementById('hud');
 
 // Variables de estado global del juego
-let gameMap, player, poops, enemies, gameOver, victory, paused, musicStarted;
+let gameMap, player, poops, enemies, gameOver, victory, paused, gameStarted;
 let audioPoop, audioDie, audioVictory, audioGameOver, audioBgMusic;
 
 // Función para inicializar o reiniciar todas las entidades del juego
@@ -23,6 +23,7 @@ function initGame() {
     gameOver = false;
     victory = false;
     paused = false;
+    gameStarted = false; // El juego arranca esperando que el usuario presione Enter
 }
 
 // Carga de recursos de audio
@@ -35,7 +36,6 @@ audioBgMusic = new Audio('assets/background.ogg');
 audioBgMusic.loop = true;
 audioBgMusic.volume = 0.5;
 
-musicStarted = false;
 initGame();
 
 // Control de eventos de teclado
@@ -43,14 +43,16 @@ let keys = {};
 window.addEventListener('keydown', e => {
     keys[e.code] = true;
 
-    // Activar música de fondo con la primera interacción del usuario
-    if (!musicStarted) {
+    // Arrancar el juego con la tecla Enter desde la pantalla inicial
+    if (e.code === 'Enter' && !gameStarted && !gameOver && !victory) {
+        gameStarted = true;
         audioBgMusic.play().catch(() => {});
-        musicStarted = true;
+        requestAnimationFrame(gameLoop);
+        return;
     }
 
-    // Pausar juego con la tecla Escape
-    if (e.code === 'Escape' && !gameOver && !victory) {
+    // Pausar juego con la tecla Escape (solo si el juego ya arrancó)
+    if (e.code === 'Escape' && gameStarted && !gameOver && !victory) {
         paused = !paused;
         if (paused) {
             audioBgMusic.pause();
@@ -66,6 +68,7 @@ window.addEventListener('keydown', e => {
         audioVictory.currentTime = 0;
         audioGameOver.currentTime = 0;
         initGame();
+        gameStarted = true;
         audioBgMusic.play().catch(() => {});
         requestAnimationFrame(gameLoop);
         return;
@@ -73,7 +76,7 @@ window.addEventListener('keydown', e => {
 
     // Colocar trampa con Espacio o Numpad0
     if (e.code === 'Numpad0' || e.code === 'Space') {
-        if (!paused && player.isAlive && poops.length < 5) {
+        if (gameStarted && !paused && player.isAlive && poops.length < 5) {
             poops.push({
                 x: player.x,
                 y: player.y,
@@ -104,6 +107,7 @@ const explosionImages = [1, 2, 3, 4, 5].map(i => {
 
 // Bucle principal de renderizado y lógica (Game Loop)
 function gameLoop(timestamp) {
+    if (!gameStarted) return;
     if (gameOver || victory) return;
 
     // Pantalla de pausa
@@ -311,6 +315,21 @@ function gameLoop(timestamp) {
     requestAnimationFrame(gameLoop);
 }
 
+// Función inicial para mostrar la pantalla de presentación antes de arrancar el bucle
+function drawStartScreen() {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    
+    ctx.fillStyle = '#ffff00';
+    ctx.font = '35px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('GATITO ENOJADO', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 40);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '18px Courier New';
+    ctx.fillText('Presioná [ENTER] para comenzar', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 20);
+}
+
 window.onload = () => {
-    requestAnimationFrame(gameLoop);
+    drawStartScreen();
 };
