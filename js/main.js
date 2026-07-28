@@ -279,8 +279,16 @@ function gameLoop(timestamp) {
         }
     });
 
+    // Renderizado de enemigos con orientación dinámica corregida
     enemies.forEach(e => {
-        ctx.drawImage(imgEnemy, e.x, e.y, e.width, e.height);
+        ctx.save();
+        if (e.dx > 0) {
+            ctx.scale(-1, 1);
+            ctx.drawImage(imgEnemy, -e.x - e.width, e.y, e.width, e.height);
+        } else {
+            ctx.drawImage(imgEnemy, e.x, e.y, e.width, e.height);
+        }
+        ctx.restore();
     });
 
     player.draw(ctx, timestamp);
