@@ -5,58 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gatito Enojado</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         html, body {
             background-color: #000;
             color: #fff;
             font-family: 'Courier New', Courier, monospace;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
             margin: 0;
             padding: 0;
             overflow: hidden;
             touch-action: none;
-            position: fixed;
         }
         #hud {
-            margin-top: 4px;
+            margin: 4px 0;
             font-size: 16px;
             font-weight: bold;
+            flex-shrink: 0;
         }
         canvas {
-            width: 100vw;
-            max-width: 100%;
+            width: 100%;
+            max-width: 450px;
             height: auto;
             flex-grow: 1;
             object-fit: contain;
             background-color: #000;
         }
-        /* Controles táctiles elevados bien arriba de la barra de navegación del celu */
+        /* Controles táctiles posicionados de forma limpia sin desbordarse */
         #touch-controls {
             display: flex;
             justify-content: space-around;
             align-items: center;
             width: 100%;
-            padding: 10px 15px;
-            margin-bottom: 35px;
-            background: rgba(10, 10, 10, 0.95);
-            box-sizing: border-box;
+            padding: 8px 10px 15px 10px;
+            background: rgba(15, 15, 15, 0.98);
+            flex-shrink: 0;
             z-index: 10;
         }
         .dpad {
             display: grid;
-            grid-template-columns: repeat(3, 55px);
-            grid-template-rows: repeat(3, 55px);
+            grid-template-columns: repeat(3, 50px);
+            grid-template-rows: repeat(3, 50px);
             gap: 4px;
         }
         .t-btn {
             background: #222;
             color: #fff;
             border: 2px solid #666;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
             border-radius: 10px;
             display: flex;
@@ -77,8 +78,8 @@
             align-items: center;
         }
         .action-btn {
-            width: 75px;
-            height: 75px;
+            width: 70px;
+            height: 70px;
             background: #8b0000;
             border-radius: 50%;
             border: 3px solid #ff4500;
@@ -87,7 +88,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-size: 12px;
             user-select: none;
         }
         .action-btn:active {
