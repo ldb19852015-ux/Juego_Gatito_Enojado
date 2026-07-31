@@ -92,16 +92,18 @@ const bindTouchButton = (id, code) => {
     const btn = document.getElementById(id);
     if (!btn) return;
 
-    btn.addEventListener('touchstart', (e) => {
+    btn.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         
-        if (!gameStarted && (gameOver || victory)) {
-            initGame();
+        if (!gameStarted) {
             gameStarted = true;
             audioBgMusic.play().catch(() => {});
             requestAnimationFrame(gameLoop);
-            return;
-        } else if (!gameStarted) {
+            if (id === 'btn-bomb') return;
+        }
+
+        if (gameOver || victory) {
+            initGame();
             gameStarted = true;
             audioBgMusic.play().catch(() => {});
             requestAnimationFrame(gameLoop);
@@ -113,14 +115,20 @@ const bindTouchButton = (id, code) => {
         } else {
             keys[code] = true;
         }
-    }, { passive: false });
+    });
 
-    btn.addEventListener('touchend', (e) => {
+    btn.addEventListener('pointerup', (e) => {
         e.preventDefault();
         if (id !== 'btn-bomb') {
             keys[code] = false;
         }
-    }, { passive: false });
+    });
+
+    btn.addEventListener('pointercancel', (e) => {
+        if (id !== 'btn-bomb') {
+            keys[code] = false;
+        }
+    });
 };
 
 bindTouchButton('btn-up', 'ArrowUp');
@@ -129,7 +137,7 @@ bindTouchButton('btn-left', 'ArrowLeft');
 bindTouchButton('btn-right', 'ArrowRight');
 bindTouchButton('btn-bomb', 'Space');
 
-canvas.addEventListener('touchstart', (e) => {
+canvas.addEventListener('pointerdown', (e) => {
     if (!gameStarted) {
         gameStarted = true;
         audioBgMusic.play().catch(() => {});
@@ -140,7 +148,7 @@ canvas.addEventListener('touchstart', (e) => {
         audioBgMusic.play().catch(() => {});
         requestAnimationFrame(gameLoop);
     }
-}, { passive: false });
+});
 
 const imgCaca = new Image();
 imgCaca.src = 'assets/caca.png';
