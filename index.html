@@ -2,10 +2,10 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gatito Enojado</title>
     <style>
-        /* Estilos generales para centrar el juego y darle estética retro */
+        /* Estilos generales para centrar el juego y adaptar pantallas móviles */
         body {
             background-color: #000;
             color: #fff;
@@ -13,22 +13,82 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             height: 100vh;
             margin: 0;
             overflow: hidden;
+            touch-action: none;
         }
         /* Configuración visual del lienzo de juego (Canvas) */
         canvas {
-            border: 4px solid #333;
+            border: 2px solid #333;
             background-color: #000;
+            max-width: 100%;
+            height: auto;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
         }
         /* Estilo para el contador de vidas (HUD) */
         #hud {
-            margin-bottom: 10px;
-            font-size: 24px;
+            margin-top: 5px;
+            font-size: 20px;
             font-weight: bold;
+        }
+        /* Controles táctiles exclusivos para la versión mobile */
+        #touch-controls {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 800px;
+            padding: 10px;
+            box-sizing: border-box;
+            background: rgba(20, 20, 20, 0.8);
+        }
+        .dpad {
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-template-rows: repeat(3, 50px);
+            gap: 5px;
+        }
+        .t-btn {
+            background: #333;
+            color: #fff;
+            border: 2px solid #555;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+        .t-btn:active {
+            background: #555;
+        }
+        #btn-up { grid-column: 2; grid-row: 1; }
+        #btn-left { grid-column: 1; grid-row: 2; }
+        #btn-right { grid-column: 3; grid-row: 2; }
+        #btn-down { grid-column: 2; grid-row: 3; }
+        
+        .action-pad {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .action-btn {
+            width: 70px;
+            height: 70px;
+            background: #8b0000;
+            border-radius: 50%;
+            border: 2px solid #ff4500;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        .action-btn:active {
+            background: #ff4500;
         }
     </style>
 </head>
@@ -39,6 +99,19 @@
     
     <!-- Canvas principal donde se renderiza el motor del juego -->
     <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <!-- Botones táctiles en pantalla para dispositivos móviles -->
+    <div id="touch-controls">
+        <div class="dpad">
+            <div class="t-btn" id="btn-up">▲</div>
+            <div class="t-btn" id="btn-left">◀</div>
+            <div class="t-btn" id="btn-right">▶</div>
+            <div class="t-btn" id="btn-down">▼</div>
+        </div>
+        <div class="action-pad">
+            <div class="action-btn" id="btn-bomb">TRAMPA</div>
+        </div>
+    </div>
 
     <!-- Importación del script principal como módulo de ES6 -->
     <script type="module" src="js/main.js"></script>
