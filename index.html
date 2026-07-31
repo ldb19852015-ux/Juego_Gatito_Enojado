@@ -5,63 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gatito Enojado</title>
     <style>
-        /* Estilos generales para ajustar el juego a pantalla completa en el celu */
         html, body {
             background-color: #000;
             color: #fff;
             font-family: 'Courier New', Courier, monospace;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            height: 100vh;
             margin: 0;
+            padding: 0;
             overflow: hidden;
             touch-action: none;
+            position: fixed;
         }
         #hud {
-            margin-top: 5px;
-            font-size: 18px;
+            margin-top: 4px;
+            font-size: 16px;
             font-weight: bold;
         }
-        /* Forzamos al canvas a escalar y ocupar todo el ancho disponible */
         canvas {
-            width: 100%;
-            max-width: 450px; /* Para que no se deforme de más en pantallas gigantes */
+            width: 100vw;
+            max-width: 100%;
             height: auto;
-            border: 2px solid #333;
+            flex-grow: 1;
+            object-fit: contain;
             background-color: #000;
         }
-        /* Controles táctiles fijos y bien visibles abajo */
         #touch-controls {
             display: flex;
             justify-content: space-around;
             align-items: center;
             width: 100%;
-            padding: 10px 0 20px 0;
-            background: rgba(20, 20, 20, 0.9);
+            padding: 5px 0 10px 0;
+            background: rgba(10, 10, 10, 0.95);
             box-sizing: border-box;
+            z-index: 10;
         }
         .dpad {
             display: grid;
-            grid-template-columns: repeat(3, 60px);
-            grid-template-rows: repeat(3, 60px);
-            gap: 6px;
+            grid-template-columns: repeat(3, 55px);
+            grid-template-rows: repeat(3, 55px);
+            gap: 4px;
         }
         .t-btn {
             background: #222;
             color: #fff;
             border: 2px solid #666;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             user-select: none;
         }
         .t-btn:active {
-            background: #444;
+            background: #555;
         }
         #btn-up { grid-column: 2; grid-row: 1; }
         #btn-left { grid-column: 1; grid-row: 2; }
@@ -73,8 +75,8 @@
             align-items: center;
         }
         .action-btn {
-            width: 80px;
-            height: 80px;
+            width: 75px;
+            height: 75px;
             background: #8b0000;
             border-radius: 50%;
             border: 3px solid #ff4500;
@@ -83,7 +85,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 13px;
             user-select: none;
         }
         .action-btn:active {
@@ -93,13 +95,10 @@
 </head>
 <body>
 
-    <!-- HUD superior para mostrar las vidas restantes -->
     <div id="hud">VIDAS: 3</div>
     
-    <!-- Canvas principal donde se renderiza el motor del juego -->
     <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-    <!-- Botones táctiles en pantalla para dispositivos móviles -->
     <div id="touch-controls">
         <div class="dpad">
             <div class="t-btn" id="btn-up">▲</div>
@@ -112,7 +111,6 @@
         </div>
     </div>
 
-    <!-- Importación del script principal como módulo de ES6 -->
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
