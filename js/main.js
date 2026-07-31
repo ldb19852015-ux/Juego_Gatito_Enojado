@@ -23,7 +23,7 @@ function initGame() {
     gameOver = false;
     victory = false;
     paused = false;
-    gameStarted = false; // El juego arranca esperando que el usuario presione Enter
+    gameStarted = false; // El juego arranca esperando que el usuario presione Enter o toque la pantalla
 }
 
 // Carga de recursos de audio
@@ -91,6 +91,53 @@ window.addEventListener('keydown', e => {
 });
 
 window.addEventListener('keyup', e => { keys[e.code] = false; });
+
+// Control de eventos táctiles para los botones virtuales en Android
+const bindTouchButton = (id, code) => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+
+    btn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        keys[code] = true;
+
+        if (!gameStarted && (gameOver || victory)) {
+            initGame();
+            gameStarted = true;
+            audioBgMusic.play().catch(() => {});
+            requestAnimationFrame(gameLoop);
+        } else if (!gameStarted) {
+            gameStarted = true;
+            audioBgMusic.play().catch(() => {});
+            requestAnimationFrame(gameLoop);
+        }
+    });
+
+    btn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keys[code] = false;
+    });
+};
+
+bindTouchButton('btn-up', 'ArrowUp');
+bindTouchButton('btn-down', 'ArrowDown');
+bindTouchButton('btn-left', 'ArrowLeft');
+bindTouchButton('btn-right', 'ArrowRight');
+bindTouchButton('btn-bomb', 'Space');
+
+// Inicio táctil global tocando el canvas
+canvas.addEventListener('touchstart', (e) => {
+    if (!gameStarted) {
+        gameStarted = true;
+        audioBgMusic.play().catch(() => {});
+        requestAnimationFrame(gameLoop);
+    } else if (gameOver || victory) {
+        initGame();
+        gameStarted = true;
+        audioBgMusic.play().catch(() => {});
+        requestAnimationFrame(gameLoop);
+    }
+});
 
 // Carga de texturas e imágenes estáticas y de animaciones
 const imgCaca = new Image();
