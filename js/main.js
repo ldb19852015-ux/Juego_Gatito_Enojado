@@ -2,16 +2,13 @@ import { SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE, MAP_OFFSET_X, MAP_OFFSET_Y, POO
 import { GameMap } from './map.js';
 import { Player } from './player.js';
 
-// Referencias al DOM (Canvas y HUD)
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const hud = document.getElementById('hud');
 
-// Variables de estado global del juego
 let gameMap, player, poops, enemies, gameOver, victory, paused, gameStarted;
 let audioPoop, audioDie, audioVictory, audioGameOver, audioBgMusic;
 
-// Función para inicializar o reiniciar todas las entidades del juego
 function initGame() {
     gameMap = new GameMap();
     player = new Player(MAP_OFFSET_X + TILE_SIZE, MAP_OFFSET_Y + TILE_SIZE);
@@ -23,10 +20,9 @@ function initGame() {
     gameOver = false;
     victory = false;
     paused = false;
-    gameStarted = false; // El juego arranca esperando que el usuario presione Enter o toque la pantalla
+    gameStarted = false;
 }
 
-// Carga de recursos de audio
 audioPoop = new Audio('assets/poopexplota.ogg');
 audioDie = new Audio('assets/diecat.ogg');
 audioVictory = new Audio('assets/victory.ogg');
@@ -38,12 +34,25 @@ audioBgMusic.volume = 0.5;
 
 initGame();
 
-// Control de eventos de teclado
 let keys = {};
+
+function placePoop() {
+    if (gameStarted && !paused && player.isAlive && poops.length < 5) {
+        poops.push({
+            x: player.x,
+            y: player.y,
+            width: TILE_SIZE,
+            height: TILE_SIZE,
+            spawnTime: performance.now(),
+            exploding: false,
+            explosionStart: 0
+        });
+    }
+}
+
 window.addEventListener('keydown', e => {
     keys[e.code] = true;
 
-    // Arrancar el juego con la tecla Enter desde la pantalla inicial
     if (e.code === 'Enter' && !gameStarted && !gameOver && !victory) {
         gameStarted = true;
         audioBgMusic.play().catch(() => {});
@@ -51,7 +60,6 @@ window.addEventListener('keydown', e => {
         return;
     }
 
-    // Pausar juego con la tecla Escape (solo si el juego ya arrancó)
     if (e.code === 'Escape' && gameStarted && !gameOver && !victory) {
         paused = !paused;
         if (paused) {
@@ -61,7 +69,6 @@ window.addEventListener('keydown', e => {
         }
     }
 
-    // Reiniciar partida con Enter si hubo victoria o derrota
     if (e.code === 'Enter' && (gameOver || victory)) {
         audioVictory.pause();
         audioGameOver.pause();
@@ -74,48 +81,45 @@ window.addEventListener('keydown', e => {
         return;
     }
 
-    // Colocar trampa con Espacio o Numpad0
     if (e.code === 'Numpad0' || e.code === 'Space') {
-        if (gameStarted && !paused && player.isAlive && poops.length < 5) {
-            poops.push({
-                x: player.x,
-                y: player.y,
-                width: TILE_SIZE,
-                height: TILE_SIZE,
-                spawnTime: performance.now(),
-                exploding: false,
-                explosionStart: 0
-            });
-        }
+        placePoop();
     }
 });
 
 window.addEventListener('keyup', e => { keys[e.code] = false; });
 
-// Control de eventos táctiles para los botones virtuales en Android
 const bindTouchButton = (id, code) => {
     const btn = document.getElementById(id);
     if (!btn) return;
 
     btn.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        keys[code] = true;
-
+        
         if (!gameStarted && (gameOver || victory)) {
             initGame();
             gameStarted = true;
             audioBgMusic.play().catch(() => {});
             requestAnimationFrame(gameLoop);
+            return;
         } else if (!gameStarted) {
             gameStarted = true;
             audioBgMusic.play().catch(() => {});
             requestAnimationFrame(gameLoop);
+            return;
+        }
+
+        if (id === 'btn-bomb') {
+            placePoop();
+        } else {
+            keys[code] = true;
         }
     });
 
     btn.addEventListener('touchend', (e) => {
         e.preventDefault();
-        keys[code] = false;
+        if (id !== 'btn-bomb') {
+            keys[code] = false;
+        }
     });
 };
 
@@ -125,7 +129,6 @@ bindTouchButton('btn-left', 'ArrowLeft');
 bindTouchButton('btn-right', 'ArrowRight');
 bindTouchButton('btn-bomb', 'Space');
 
-// Inicio táctil global tocando el canvas
 canvas.addEventListener('touchstart', (e) => {
     if (!gameStarted) {
         gameStarted = true;
@@ -139,7 +142,6 @@ canvas.addEventListener('touchstart', (e) => {
     }
 });
 
-// Carga de texturas e imágenes estáticas y de animaciones
 const imgCaca = new Image();
 imgCaca.src = 'assets/caca.png';
 
@@ -152,12 +154,10 @@ const explosionImages = [1, 2, 3, 4, 5].map(i => {
     return img;
 });
 
-// Bucle principal de renderizado y lógica (Game Loop)
 function gameLoop(timestamp) {
     if (!gameStarted) return;
     if (gameOver || victory) return;
 
-    // Pantalla de pausa
     if (paused) {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -169,14 +169,12 @@ function gameLoop(timestamp) {
         return;
     }
 
-    // Gestión de obstáculos y colisiones con trampas activas
     const solidPoops = poops.filter(p => timestamp - p.spawnTime > 200).map(p => ({ x: p.x, y: p.y, width: p.width, height: p.height }));
     const obstacles = [...gameMap.walls, ...gameMap.destructibles, ...solidPoops];
 
     player.update(keys, obstacles);
     hud.innerText = `VIDAS: ${player.lives}`;
 
-    // Lógica del temporizador y detonación de las trampas
     poops.forEach((p) => {
         if (!p.exploding && timestamp - p.spawnTime >= POOP_TIMER) {
             p.exploding = true;
@@ -192,14 +190,12 @@ function gameLoop(timestamp) {
 
             gameMap.removeBlocksInArea(expRect);
 
-            // Eliminar enemigos atrapados en la explosión
             enemies = enemies.filter(enemy => {
                 const hit = enemy.x < expRect.x + expRect.width && enemy.x + enemy.width > expRect.x &&
                             enemy.y < expRect.y + expRect.height && enemy.y + enemy.height > expRect.y;
                 return !hit;
             });
 
-            // Dañar al jugador si está dentro del radio de explosión
             const playerRect = player.getRect();
             if (playerRect.x < expRect.x + expRect.width && playerRect.x + playerRect.width > expRect.x &&
                 playerRect.y < expRect.y + expRect.height && playerRect.y + playerRect.height > expRect.y) {
@@ -212,12 +208,10 @@ function gameLoop(timestamp) {
         }
     });
 
-    // Limpiar trampas terminadas de la lista
     poops = poops.filter(p => !p.exploding || (timestamp - p.explosionStart < 500));
 
     const enemyObstacles = [...gameMap.walls, ...gameMap.destructibles, ...solidPoops];
 
-    // IA simple y movimiento de los enemigos
     enemies.forEach(enemy => {
         const hbSize = 24;
         const hbOffset = (enemy.width - hbSize) / 2;
@@ -254,7 +248,6 @@ function gameLoop(timestamp) {
             enemy.dy = 0;
         }
 
-        // Cambio de dirección aleatorio ante obstáculos
         if (enemy.dx === 0 && enemy.dy === 0) {
             const directions = [
                 { dx: enemy.speed, dy: 0 },
@@ -286,7 +279,6 @@ function gameLoop(timestamp) {
             }
         }
 
-        // Colisión entre enemigo y jugador
         const playerRect = player.getRect();
         const enemyHitbox = { x: enemy.x + hbOffset, y: enemy.y + hbOffset, width: hbSize, height: hbSize };
         if (playerRect.x < enemyHitbox.x + enemyHitbox.width && playerRect.x + playerRect.width > enemyHitbox.x &&
@@ -299,7 +291,6 @@ function gameLoop(timestamp) {
         }
     });
 
-    // Control de condiciones de victoria y derrota
     if (enemies.length === 0) {
         victory = true;
         audioBgMusic.pause();
@@ -311,7 +302,6 @@ function gameLoop(timestamp) {
         audioGameOver.play().catch(() => {});
     }
 
-    // Renderizado gráfico de la escena
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -330,7 +320,6 @@ function gameLoop(timestamp) {
         }
     });
 
-    // Renderizado de enemigos con orientación dinámica corregida
     enemies.forEach(e => {
         ctx.save();
         if (e.dx > 0) {
@@ -344,7 +333,6 @@ function gameLoop(timestamp) {
 
     player.draw(ctx, timestamp);
 
-    // Pantallas de Fin de Partida / Victoria
     if (victory || gameOver) {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
         ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -362,7 +350,6 @@ function gameLoop(timestamp) {
     requestAnimationFrame(gameLoop);
 }
 
-// Función inicial para mostrar la pantalla de presentación antes de arrancar el bucle
 function drawStartScreen() {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
