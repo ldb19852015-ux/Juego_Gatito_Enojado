@@ -113,14 +113,14 @@ const bindTouchButton = (id, code) => {
         } else {
             keys[code] = true;
         }
-    });
+    }, { passive: false });
 
     btn.addEventListener('touchend', (e) => {
         e.preventDefault();
         if (id !== 'btn-bomb') {
             keys[code] = false;
         }
-    });
+    }, { passive: false });
 };
 
 bindTouchButton('btn-up', 'ArrowUp');
@@ -140,7 +140,7 @@ canvas.addEventListener('touchstart', (e) => {
         audioBgMusic.play().catch(() => {});
         requestAnimationFrame(gameLoop);
     }
-});
+}, { passive: false });
 
 const imgCaca = new Image();
 imgCaca.src = 'assets/caca.png';
