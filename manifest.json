@@ -1,0 +1,15 @@
+{
+  "name": "Gatito Enojado",
+  "short_name": "GatitoEnojado",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "assets/enemy.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
